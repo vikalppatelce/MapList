@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import com.example.maplist.R;
 import com.example.maplist.api.ViewModelFactory;
@@ -74,6 +76,9 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
     binding.recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), HORIZONTAL));
     binding.recyclerView.setAdapter(adapter);
 
+    SnapHelper snapHelper = new LinearSnapHelper();
+    snapHelper.attachToRecyclerView(binding.recyclerView);
+
     supportMapFragment = SupportMapFragment.newInstance();
 
     ((NavigationActivity) getActivity()).addFragment(
@@ -118,6 +123,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
   }
 
   @Override public boolean onMarkerClick(final Marker marker) {
+    binding.recyclerView.smoothScrollToPosition(getPosition(marker.getTitle()));
     return false;
   }
 
@@ -164,6 +170,17 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
         .title(String.valueOf(poi.getId()))
         .snippet(poi.getFleetType());
     googleMap.addMarker(marker);
+  }
+
+  private int getPosition(String id) {
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        if (id.equalsIgnoreCase(String.valueOf(list.get(i).getId()))) {
+          return i;
+        }
+      }
+    }
+    return 0;
   }
 
   private BitmapDescriptor getTaxiMarker(int res) {
