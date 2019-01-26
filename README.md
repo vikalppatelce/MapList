@@ -1,5 +1,5 @@
 ### Summary
-A simple concept for showing available taxies.
+A simple concept for showing available cars in List & Map.
 
 ### Features
 
