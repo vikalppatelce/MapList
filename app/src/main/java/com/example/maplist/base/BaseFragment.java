@@ -12,23 +12,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public abstract class BaseFragment<B extends ViewDataBinding> extends Fragment {
+public abstract class BaseFragment<B extends ViewDataBinding> extends ViewLifeCycleFragment {
 
+  protected B binding;
 
-    protected B binding;
+  public void showToast(Context context, String message) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+  }
 
-    public void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    binding = DataBindingUtil.inflate(inflater, getLayout(), container, false);
+    return binding.getRoot();
+  }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, getLayout(), container, false);
-        return binding.getRoot();
-    }
-
-
-    public abstract int getLayout();
-
+  public abstract int getLayout();
 }

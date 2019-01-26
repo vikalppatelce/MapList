@@ -23,6 +23,7 @@ public class ListFragment extends BaseFragment<FragmentListBinding> {
 
   private ListAdapter adapter;
   private ListViewModel viewModel;
+
   private String[] latLong = new String[] { "53.694865", "9.757589", "53.394655", "10.099891" };
 
   @Inject
@@ -32,7 +33,7 @@ public class ListFragment extends BaseFragment<FragmentListBinding> {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     AndroidSupportInjection.inject(this);
-    viewModel = ViewModelProviders.of(this, viewModelFactory).get(ListViewModel.class);
+    viewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(ListViewModel.class);
   }
 
   @Override
@@ -74,6 +75,9 @@ public class ListFragment extends BaseFragment<FragmentListBinding> {
 
     viewModel
         .apiListData()
-        .observe(getViewLifecycleOwner(), list -> adapter.addPoiList(list.getPoiList()));
+        .observe(getViewLifecycleOwner(), list -> {
+          adapter.addPoiList(list.getPoiList());
+          viewModel.notifyMap(list);
+        });
   }
 }

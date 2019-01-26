@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
   <data>
@@ -21,24 +22,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
+        app:cardElevation="2dp"
         >
 
-      <LinearLayout
+      <FrameLayout
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
+          android:layout_height="90dp"
           android:layout_margin="@dimen/margin_medium"
           android:gravity="center_vertical"
           android:orientation="horizontal"
           android:weightSum="2"
           >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@{item.fleetType}"
+        <ImageView
+            android:id="@+id/iv_driver"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_driver"
             />
 
-      </LinearLayout>
+        <View
+            android:layout_width="180dp"
+            android:layout_height="10dp"
+            android:layout_gravity="left|center"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="80dp"
+            android:background="#ccc"
+            />
+
+        <View
+            android:layout_width="80dp"
+            android:layout_height="10dp"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="16dp"
+            android:background="#ccc"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="6dp"
+            android:layout_marginEnd="8dp"
+            android:background="@{item.fleetType.equals(`TAXI`) ? @drawable/shape_taxi_type : @drawable/shape_pooling_type}"
+            android:padding="4dp"
+            android:text="@{item.fleetType}"
+            android:textColor="@color/colorNavIcon"
+            android:textSize="14sp"
+            />
+
+      </FrameLayout>
 
     </android.support.v7.widget.CardView>
   </LinearLayout>
