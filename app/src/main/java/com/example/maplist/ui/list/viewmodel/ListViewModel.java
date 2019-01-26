@@ -1,5 +1,6 @@
 package com.example.maplist.ui.list.viewmodel;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import com.example.maplist.api.ApiClient;
@@ -14,6 +15,7 @@ public class ListViewModel extends ViewModel {
   private final ApiClient apiClient;
 
   private final MutableLiveData<PoiList> apiPoiData = new MutableLiveData<>();
+  private final MutableLiveData<PoiList> apiMapPoiData = new MutableLiveData<>();
   private final MutableLiveData<Throwable> apiError = new MutableLiveData<>();
   private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
@@ -23,15 +25,19 @@ public class ListViewModel extends ViewModel {
     disposable = new CompositeDisposable();
   }
 
-  public MutableLiveData<PoiList> apiListData() {
+  public LiveData<PoiList> apiListData() {
     return apiPoiData;
   }
 
-  public MutableLiveData<Throwable> apiError() {
+  public LiveData<PoiList> apiMapListData() {
+    return apiMapPoiData;
+  }
+
+  public LiveData<Throwable> apiError() {
     return apiError;
   }
 
-  public MutableLiveData<Boolean> loading() {
+  public LiveData<Boolean> loading() {
     return loading;
   }
 
@@ -46,6 +52,10 @@ public class ListViewModel extends ViewModel {
             apiError::postValue
         )
     );
+  }
+
+  public void notifyMap(PoiList list) {
+    apiMapPoiData.postValue(list);
   }
 
   @Override

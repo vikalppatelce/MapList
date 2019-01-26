@@ -1,11 +1,17 @@
 package com.example.maplist.ui.map.view;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import com.example.maplist.R;
 import com.example.maplist.api.ViewModelFactory;
@@ -19,6 +25,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -48,7 +56,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     AndroidSupportInjection.inject(this);
-    viewModel = ViewModelProviders.of(this, viewModelFactory).get(ListViewModel.class);
+    viewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(ListViewModel.class);
   }
 
   @Override
@@ -67,6 +75,9 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
     ));
     binding.recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), HORIZONTAL));
     binding.recyclerView.setAdapter(adapter);
+
+    SnapHelper snapHelper = new LinearSnapHelper();
+    snapHelper.attachToRecyclerView(binding.recyclerView);
 
     supportMapFragment = SupportMapFragment.newInstance();
 
@@ -103,7 +114,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
     });
 
     viewModel
-        .apiListData()
+        .apiMapListData()
         .observe(getViewLifecycleOwner(), list -> {
           this.list = list.getPoiList();
           adapter.addPoiList(list.getPoiList());
@@ -112,6 +123,7 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
   }
 
   @Override public boolean onMarkerClick(final Marker marker) {
+    binding.recyclerView.smoothScrollToPosition(getPosition(marker.getTitle()));
     return false;
   }
 
@@ -152,8 +164,40 @@ public class MapFragment extends BaseFragment<FragmentMapBinding>
     MarkerOptions
         marker = new MarkerOptions()
         .position(new LatLng(poi.getCoordinate().getLatitude(), poi.getCoordinate().getLongitude()))
+        .icon(getTaxiMarker(
+            poi.getFleetType().equalsIgnoreCase("taxi") == true ? R.drawable.taxi_marker
+                                                                : R.drawable.pooling_marker))
         .title(String.valueOf(poi.getId()))
         .snippet(poi.getFleetType());
     googleMap.addMarker(marker);
+  }
+
+  private int getPosition(String id) {
+    if (list != null && list.size() > 0) {
+      for (int i = 0; i < list.size(); i++) {
+        if (id.equalsIgnoreCase(String.valueOf(list.get(i).getId()))) {
+          return i;
+        }
+      }
+    }
+    return 0;
+  }
+
+  private BitmapDescriptor getTaxiMarker(int res) {
+    Drawable vectorDrawable = ContextCompat.getDrawable(getActivity(), res);
+    vectorDrawable.setBounds(
+        0,
+        0,
+        vectorDrawable.getIntrinsicWidth(),
+        vectorDrawable.getIntrinsicHeight()
+    );
+    Bitmap bitmap = Bitmap.createBitmap(
+        vectorDrawable.getIntrinsicWidth(),
+        vectorDrawable.getIntrinsicHeight(),
+        Bitmap.Config.ARGB_8888
+    );
+    Canvas canvas = new Canvas(bitmap);
+    vectorDrawable.draw(canvas);
+    return BitmapDescriptorFactory.fromBitmap(bitmap);
   }
 }

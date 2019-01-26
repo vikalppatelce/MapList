@@ -16,6 +16,11 @@ public class Coordinate {
 		return latitude;
 	}
 
+	public Coordinate(final Double latitude, final Double longitude) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
